@@ -1,50 +1,115 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+- Version change: [TEMPLATE] → 1.0.0 (initial ratification)
+- Modified principles: n/a (first fill of template)
+- Added sections:
+  - I. Component-First UI (shadcn/ui Mandatory)
+  - II. Data Access Isolation (No Prisma in Components)
+  - III. Server Actions via next-safe-action
+  - IV. TypeScript, Clean Code & DRY
+  - V. Framework & Tooling Conventions
+  - VI. Manual Verification Only (No Dev Server Checks)
+  - Technology Stack
+  - Governance
+- Removed sections: none
+- Templates requiring updates:
+  - ✅ .specify/templates/plan-template.md (Constitution Check gate is generic, references this file — no edit needed)
+  - ✅ .specify/templates/spec-template.md (technology-agnostic, no conflicting references)
+  - ✅ .specify/templates/tasks-template.md (technology-agnostic, no conflicting references)
+  - ⚠ .specify/templates/commands/*.md — directory does not exist in this project, nothing to sync
+- Follow-up TODOs: none
+-->
+
+# Habitos Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Component-First UI (shadcn/ui Mandatory)
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+The project MUST use shadcn/ui as its component library. Before writing any UI element
+from scratch, the codebase MUST be checked for an existing shadcn/ui component that
+satisfies the goal, and that component MUST be used instead. Shared wrappers defined in
+`components/ui/page.tsx` MUST be used for page-level layout. Color values MUST come from
+the theme tokens defined in `app/globals.css`; hard-coded Tailwind color utilities are
+prohibited. Interactive primitives that ship built-in behavior (e.g. the `Sheet` close
+control) MUST NOT be reimplemented manually.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+**Rationale**: A single component source keeps the UI visually consistent, themeable
+(light/dark), accessible, and prevents divergent, hand-rolled implementations of
+functionality shadcn/ui already solves.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### II. Data Access Isolation (No Prisma in Components)
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+Components (Server or Client) MUST NOT import or call Prisma directly. All database
+reads and writes MUST be exposed through functions defined in `@data`, following the
+pattern established in `app/page.tsx`.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+**Rationale**: Centralizing data access keeps persistence logic testable, reusable
+across routes, and decoupled from presentation concerns.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### III. Server Actions via next-safe-action
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+All Server Actions MUST be implemented with `next-safe-action` and MUST live in the
+`@actions` folder, using `@actions/create-booking.ts` as the structural base. Client
+code MUST invoke Server Actions through the `useAction` hook. Every action that touches
+user-scoped data MUST use `protectedActionClient` (`@lib/action-client.ts`) and MUST
+explicitly validate authentication and authorization for the acting user before
+performing the operation.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+**Rationale**: A single, validated action pattern guarantees consistent input parsing,
+error handling, and prevents unauthorized mutations from slipping through ad hoc
+handlers.
+
+### IV. TypeScript, Clean Code & DRY
+
+All code MUST be written in TypeScript. Code MUST follow SOLID and Clean Code
+principles: descriptive variable names (e.g. `isLoading`, `hasError`), no duplicated
+logic (extract reusable functions/components instead), kebab-case file and folder
+names, and `rem` units instead of `px` for measurements. Source files MUST NOT contain
+comments.
+
+**Rationale**: Consistent naming and structure keep the codebase maintainable without
+relying on comments that drift out of sync with the code they describe.
+
+### V. Framework & Tooling Conventions
+
+Images MUST be rendered with the Next.js `Image` component. Icons MUST come from
+`lucide-react`. ESLint errors MUST be fixed before work is considered done. Before
+adding a `Footer`, the relevant `layout.tsx` files MUST be checked to confirm it is not
+already rendered. Documentation, library, and API lookups MUST use the Context7 MCP;
+semantic code retrieval and editing MUST use the Serena MCP.
+
+**Rationale**: These conventions align the project with Next.js performance best
+practices and prevent duplicated UI or stale, hallucinated documentation.
+
+### VI. Manual Verification Only (No Dev Server Checks)
+
+The package manager for this project is pnpm exclusively. Changes MUST NOT be verified
+by running `npm run dev` (or starting any dev server as a verification step).
+Verification relies on static analysis (TypeScript, ESLint) and manual/user review.
+
+**Rationale**: Keeps agent-driven workflows fast and predictable, and avoids leaving
+orphaned background dev-server processes running.
+
+## Technology Stack
+
+The project is built on pnpm, React 19, Next.js 16, Prisma 7 (schema at
+`prisma/schema.prisma`), shadcn/ui, and Better Auth for authentication. Any change to
+this stack is a governance-level decision and MUST be reflected in this constitution.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution supersedes all other conventions and prior guidance for this
+repository. All plans, specs, and task lists MUST verify compliance with these
+principles at their respective Constitution Check gates.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+Amendments require: (1) the proposed change stated explicitly, (2) a version bump
+following semantic versioning — MAJOR for backward-incompatible principle removals or
+redefinitions, MINOR for new or materially expanded principles, PATCH for wording or
+clarification fixes, and (3) propagation of the change to any dependent templates
+(`plan-template.md`, `spec-template.md`, `tasks-template.md`) in the same change.
+
+Complexity or deviation from a principle MUST be justified in the relevant plan's
+Complexity Tracking section; unjustified deviations MUST be rejected during review.
+
+**Version**: 1.0.0 | **Ratified**: 2026-07-14 | **Last Amended**: 2026-07-14
