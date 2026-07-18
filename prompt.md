@@ -1,8 +1,6 @@
-Crie um sistema de gestão de hábitos, com autenticação de usuários.
+@habitos/specs/001-gestao-de-habitos/checklists/
 
-## Comportamentos esperados
-
-- O usuário pode criar conta e fazer login (e-mail e senha).
-- O usuário pode criar hábitos que ele queira praticar.
-- O usuário pode, para cada dia da semana, marcar quais hábitos ele concluiu.
-- O usuário deve conseguir visualizar uma dasboard com métricas de hábitos concluídos por dia.
+- Use Prisma como ORM (faça seu setup)
+- BetterAuth para autenticação (faça o setup)
+- next-safe-action para criar server actions, SQLite como banco de dados
+- Use shadcn/ui como biblioteca de componentes (faça o setup)
