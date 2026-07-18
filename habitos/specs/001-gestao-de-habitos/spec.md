@@ -8,6 +8,16 @@
 
 **Input**: Descrição do usuário: "Crie um sistema de gestão de hábitos, com autenticação de usuários. Comportamentos esperados: o usuário pode criar conta e fazer login (e-mail e senha); o usuário pode criar hábitos que ele queira praticar; o usuário pode, para cada dia da semana, marcar quais hábitos ele concluiu; o usuário deve conseguir visualizar uma dashboard com métricas de hábitos concluídos por dia."
 
+## Clarifications
+
+### Session 2026-07-18
+
+- Q: Qual janela de tempo o dashboard deve exibir nas métricas de hábitos concluídos por dia? → A: Últimos 30 dias.
+- Q: Ao remover um hábito, o que deve acontecer com as conclusões já registradas dele? → A: Manter histórico — a remoção arquiva (oculta) o hábito da lista, preservando as conclusões nas métricas.
+- Q: Quais requisitos mínimos a senha deve atender no momento do cadastro? → A: Mínimo de 8 caracteres.
+- Q: Como o sistema deve tratar a marcação de conclusão em uma data futura? → A: Bloquear datas futuras na interface e no servidor.
+- Q: Que regras de validação o nome do hábito deve seguir? → A: Obrigatório, de 1 a 50 caracteres, único entre os hábitos ativos do usuário.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Cadastro e Autenticação de Usuário (Priority: P1)
@@ -82,11 +92,11 @@ Um usuário autenticado acessa um dashboard que apresenta métricas de quantos h
 ### Edge Cases
 
 - O que acontece quando um usuário tenta acessar o dashboard, a lista de hábitos ou a marcação de conclusões sem estar autenticado? O acesso deve ser bloqueado e o usuário direcionado ao login.
-- O que acontece quando um hábito é removido após já possuir conclusões registradas? As métricas históricas não devem exibir dados inconsistentes.
-- Como o sistema trata a tentativa de marcar a conclusão de um hábito em uma data futura?
+- O que acontece quando um hábito é removido após já possuir conclusões registradas? A remoção arquiva o hábito (ocultando-o da lista) e preserva as conclusões, que continuam sendo contabilizadas nas métricas históricas.
+- Como o sistema trata a tentativa de marcar a conclusão de um hábito em uma data futura? A marcação é bloqueada na interface e rejeitada pelo servidor.
 - Como o sistema se comporta quando um usuário possui muitos hábitos, garantindo que a visão semanal e o dashboard permaneçam legíveis?
 - O que acontece se dois pedidos de marcação/desmarcação do mesmo hábito no mesmo dia chegarem quase simultaneamente? O resultado final deve ser consistente e sem duplicidade.
-- Como o sistema trata senhas que não atendem aos requisitos mínimos de segurança durante o cadastro?
+- Como o sistema trata senhas que não atendem ao requisito mínimo de segurança (mínimo de 8 caracteres) durante o cadastro? O cadastro é impedido e uma mensagem orienta o requisito.
 
 ## Requirements *(mandatory)*
 
@@ -94,30 +104,33 @@ Um usuário autenticado acessa um dashboard que apresenta métricas de quantos h
 
 - **FR-001**: O sistema MUST permitir que um visitante crie uma conta informando e-mail e senha.
 - **FR-002**: O sistema MUST validar que o e-mail informado no cadastro tem formato válido e ainda não está associado a outra conta.
-- **FR-003**: O sistema MUST exigir uma senha que atenda a requisitos mínimos de segurança no momento do cadastro.
+- **FR-003**: O sistema MUST exigir uma senha com no mínimo 8 caracteres no momento do cadastro.
 - **FR-004**: O sistema MUST permitir que um usuário cadastrado se autentique com e-mail e senha.
 - **FR-005**: O sistema MUST negar o acesso quando as credenciais informadas forem inválidas, sem revelar qual campo está incorreto.
 - **FR-006**: O sistema MUST permitir que o usuário autenticado encerre sua sessão.
 - **FR-007**: O sistema MUST restringir todas as áreas de hábitos, marcações e dashboard a usuários autenticados.
 - **FR-008**: O sistema MUST garantir que cada usuário acesse somente os seus próprios hábitos e conclusões, sem visualizar dados de outros usuários.
 - **FR-009**: O usuário MUST ser capaz de criar um hábito informando um nome descritivo.
-- **FR-010**: O sistema MUST impedir a criação de um hábito sem nome válido.
+- **FR-010**: O sistema MUST impedir a criação de um hábito cujo nome, após remover espaços nas extremidades, esteja vazio ou exceda 50 caracteres.
 - **FR-011**: O usuário MUST ser capaz de visualizar a lista dos seus hábitos.
 - **FR-012**: O usuário MUST ser capaz de editar um hábito existente.
-- **FR-013**: O usuário MUST ser capaz de remover um hábito existente.
+- **FR-013**: O usuário MUST ser capaz de remover um hábito existente; a remoção MUST arquivar o hábito, ocultando-o da lista, e MUST preservar as conclusões já registradas para fins de métricas históricas.
 - **FR-014**: O usuário MUST ser capaz de marcar um hábito como concluído em um dia específico.
 - **FR-015**: O usuário MUST ser capaz de desmarcar a conclusão de um hábito em um dia específico.
 - **FR-016**: O sistema MUST manter no máximo uma conclusão por hábito por dia, evitando registros duplicados.
 - **FR-017**: O sistema MUST permitir que o usuário visualize, por dia da semana, quais hábitos estão concluídos.
 - **FR-018**: O sistema MUST persistir hábitos e conclusões de modo que permaneçam disponíveis entre sessões e após recarregar a aplicação.
-- **FR-019**: O sistema MUST apresentar um dashboard com a quantidade de hábitos concluídos por dia.
+- **FR-019**: O sistema MUST apresentar um dashboard com a quantidade de hábitos concluídos por dia, considerando a janela dos últimos 30 dias.
 - **FR-020**: O sistema MUST exibir uma indicação clara de ausência de dados no dashboard quando não houver conclusões registradas.
+- **FR-021**: O sistema MUST impedir que um usuário possua dois hábitos ativos com o mesmo nome.
+- **FR-022**: O sistema MUST bloquear a marcação de conclusão em datas futuras, tanto na interface quanto na validação do servidor.
+- **FR-023**: O dashboard MUST contabilizar também as conclusões de hábitos arquivados nas métricas históricas.
 
 ### Key Entities *(include if feature involves data)*
 
 - **Usuário**: Representa a pessoa que utiliza o sistema. Atributos principais: identificador único, e-mail (único), credencial de acesso e data de criação. É o proprietário de todos os hábitos e conclusões associados a ele.
-- **Hábito**: Representa uma prática que o usuário deseja acompanhar. Atributos principais: identificador único, nome, referência ao usuário proprietário e data de criação. Um usuário possui muitos hábitos.
-- **Conclusão de Hábito**: Representa o registro de que um hábito foi concluído em um determinado dia. Atributos principais: referência ao hábito, dia a que se refere e data do registro. É única por combinação de hábito e dia. Um hábito possui muitas conclusões, uma por dia no máximo.
+- **Hábito**: Representa uma prática que o usuário deseja acompanhar. Atributos principais: identificador único, nome (de 1 a 50 caracteres, único entre os hábitos ativos do usuário), estado (ativo ou arquivado), referência ao usuário proprietário e data de criação. A remoção arquiva o hábito em vez de apagá-lo, preservando suas conclusões. Um usuário possui muitos hábitos.
+- **Conclusão de Hábito**: Representa o registro de que um hábito foi concluído em um determinado dia. Atributos principais: referência ao hábito, dia a que se refere (não pode ser futuro) e data do registro. É única por combinação de hábito e dia. Um hábito possui muitas conclusões, uma por dia no máximo.
 
 ## Success Criteria *(mandatory)*
 
@@ -126,7 +139,7 @@ Um usuário autenticado acessa um dashboard que apresenta métricas de quantos h
 - **SC-001**: Um novo usuário consegue concluir o cadastro e entrar no sistema em menos de 2 minutos na primeira tentativa.
 - **SC-002**: Um usuário autenticado consegue criar um novo hábito em até 30 segundos, sem instruções externas.
 - **SC-003**: 95% das tentativas de marcar ou desmarcar a conclusão de um hábito refletem o resultado esperado na visão da semana sem necessidade de recarregar manualmente.
-- **SC-004**: As métricas exibidas no dashboard correspondem, com 100% de precisão, ao total de conclusões efetivamente registradas por dia.
+- **SC-004**: As métricas exibidas no dashboard correspondem, com 100% de precisão, ao total de conclusões efetivamente registradas por dia nos últimos 30 dias.
 - **SC-005**: Nenhum usuário consegue visualizar ou alterar hábitos e conclusões pertencentes a outro usuário em 100% das tentativas.
 - **SC-006**: 90% dos usuários conseguem, no primeiro acesso, entender no dashboard em qual dia concluíram mais hábitos sem ajuda adicional.
 
@@ -134,8 +147,8 @@ Um usuário autenticado acessa um dashboard que apresenta métricas de quantos h
 
 - A autenticação utiliza exclusivamente e-mail e senha; provedores externos (login social, SSO) estão fora do escopo desta versão.
 - Os hábitos são uma lista livre definida pelo usuário e podem ser marcados como concluídos em qualquer dia, sem agendamento fixo por dia da semana (não há hábitos vinculados a dias específicos nesta versão).
-- A "semana" é apresentada com base no dia atual, permitindo ao usuário navegar e marcar conclusões dos dias correntes e passados; marcações em datas futuras não são o fluxo principal.
-- O dashboard apresenta métricas de conclusões por dia; agregações mais avançadas (sequências, taxas de sucesso por hábito, comparativos entre semanas) estão fora do escopo desta versão.
+- A "semana" é apresentada com base no dia atual, permitindo ao usuário navegar e marcar conclusões dos dias correntes e passados; marcações em datas futuras são bloqueadas na interface e no servidor.
+- O dashboard apresenta métricas de conclusões por dia considerando a janela dos últimos 30 dias; agregações mais avançadas (sequências, taxas de sucesso por hábito, comparativos entre semanas) estão fora do escopo desta versão.
 - Cada usuário gerencia apenas seus próprios hábitos; não há compartilhamento, colaboração ou papéis administrativos nesta versão.
 - Recuperação de senha e verificação de e-mail não fazem parte do escopo desta versão, embora possam ser adicionadas posteriormente.
 - O acesso ocorre por meio de um navegador web; aplicativos móveis nativos estão fora do escopo desta versão.
