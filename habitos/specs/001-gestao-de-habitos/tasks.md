@@ -108,11 +108,11 @@ genérico.
 
 ### Implementation for User Story 1
 
-- [ ] T017 [P] [US1] Criar formulário de autenticação reutilizável (campos e-mail/senha via `form` shadcn) em `components/habitos/auth-form.tsx`
-- [ ] T018 [US1] Criar a página de cadastro em `app/(auth)/sign-up/page.tsx` usando `authClient.signUp.email` (senha mín. 8, erro de e-mail em uso, FR-001…FR-003) (depende de T017)
-- [ ] T019 [P] [US1] Criar a página de login em `app/(auth)/login/page.tsx` usando `authClient.signIn.email` (erro genérico sem revelar o campo, FR-004, FR-005) (depende de T017)
-- [ ] T020 [P] [US1] Criar o botão de logout em `components/habitos/logout-button.tsx` via `authClient.signOut` com redirecionamento a `/login` (FR-006)
-- [ ] T021 [US1] Implementar o redirecionamento por sessão na landing em `app/page.tsx` (autenticado → `/dashboard`; anônimo → `/login`)
+- [X] T017 [P] [US1] Criar formulário de autenticação reutilizável (campos e-mail/senha via `form` shadcn) em `components/habitos/auth-form.tsx`
+- [X] T018 [US1] Criar a página de cadastro em `app/(auth)/sign-up/page.tsx` usando `authClient.signUp.email` (senha mín. 8, erro de e-mail em uso, FR-001…FR-003) (depende de T017)
+- [X] T019 [P] [US1] Criar a página de login em `app/(auth)/login/page.tsx` usando `authClient.signIn.email` (erro genérico sem revelar o campo, FR-004, FR-005) (depende de T017)
+- [X] T020 [P] [US1] Criar o botão de logout em `components/habitos/logout-button.tsx` via `authClient.signOut` com redirecionamento a `/login` (FR-006)
+- [X] T021 [US1] Implementar o redirecionamento por sessão na landing em `app/page.tsx` (autenticado → `/dashboard`; anônimo → `/login`)
 
 **Checkpoint**: US1 completa e testável de forma independente (MVP).
 
@@ -129,13 +129,13 @@ os hábitos do primeiro.
 
 ### Implementation for User Story 2
 
-- [ ] T022 [P] [US2] Implementar acesso a dados em `data/habits.ts`: `getHabitsByUser` (apenas `archivedAt: null`, ordenado por `createdAt`), `getHabitById` (checagem de propriedade), `createHabit`, `updateHabit`, `deleteHabit` (arquivar setando `archivedAt`), e helper de unicidade de nome entre hábitos ativos (FR-008…FR-013, FR-021)
-- [ ] T023 [US2] Criar `actions/create-habit.ts` com `protectedActionClient`, Zod (`name` obrigatório, `trim`, 1–50 chars, único entre ativos) e `revalidatePath` — referência canônica do padrão next-safe-action (FR-009, FR-010, FR-021) (depende de T022)
-- [ ] T024 [US2] Criar `actions/update-habit.ts` com validação de propriedade e unicidade do nome (FR-008, FR-012, FR-021) (depende de T022)
-- [ ] T025 [US2] Criar `actions/delete-habit.ts` que arquiva o hábito após checar propriedade (FR-008, FR-013) (depende de T022)
-- [ ] T026 [P] [US2] Criar o formulário de hábito (criar/editar) em `components/habitos/habit-form.tsx` usando `useAction` (depende de T023, T024)
-- [ ] T027 [US2] Criar a lista de hábitos em `components/habitos/habit-list.tsx` com ações de editar/remover (`dropdown-menu` + `dialog`/`sheet`) usando `useAction` (depende de T025, T026)
-- [ ] T028 [US2] Criar a página de hábitos em `app/(app)/habitos/page.tsx` (Server Component que chama `getHabitsByUser` e renderiza a lista dentro do wrapper de página) (depende de T027)
+- [X] T022 [P] [US2] Implementar acesso a dados em `data/habits.ts`: `getHabitsByUser` (apenas `archivedAt: null`, ordenado por `createdAt`), `getHabitById` (checagem de propriedade), `createHabit`, `updateHabit`, `deleteHabit` (arquivar setando `archivedAt`), e helper de unicidade de nome entre hábitos ativos (FR-008…FR-013, FR-021)
+- [X] T023 [US2] Criar `actions/create-habit.ts` com `protectedActionClient`, Zod (`name` obrigatório, `trim`, 1–50 chars, único entre ativos) e `revalidatePath` — referência canônica do padrão next-safe-action (FR-009, FR-010, FR-021) (depende de T022)
+- [X] T024 [US2] Criar `actions/update-habit.ts` com validação de propriedade e unicidade do nome (FR-008, FR-012, FR-021) (depende de T022)
+- [X] T025 [US2] Criar `actions/delete-habit.ts` que arquiva o hábito após checar propriedade (FR-008, FR-013) (depende de T022)
+- [X] T026 [P] [US2] Criar o formulário de hábito (criar/editar) em `components/habitos/habit-form.tsx` usando `useAction` (depende de T023, T024)
+- [X] T027 [US2] Criar a lista de hábitos em `components/habitos/habit-list.tsx` com ações de editar/remover (`dropdown-menu` + `dialog`/`sheet`) usando `useAction` (depende de T025, T026)
+- [X] T028 [US2] Criar a página de hábitos em `app/(app)/habitos/page.tsx` (Server Component que chama `getHabitsByUser` e renderiza a lista dentro do wrapper de página) (depende de T027)
 
 **Checkpoint**: US1 e US2 funcionam de forma independente.
 
@@ -153,10 +153,10 @@ duas vezes o mesmo dia → mantém uma única conclusão.
 
 ### Implementation for User Story 3
 
-- [ ] T029 [P] [US3] Implementar `data/completions.ts`: `getWeekCompletions` (intervalo de 7 dias) e `toggleCompletion` (normaliza `date` para meia-noite UTC, checa propriedade, rejeita data futura, upsert/delete idempotente) (FR-014…FR-017, FR-022)
-- [ ] T030 [US3] Criar `actions/toggle-completion.ts` com `protectedActionClient`, Zod (`habitId`, `date` ISO), rejeição de data futura, checagem de propriedade e `revalidatePath` (FR-014, FR-015, FR-016, FR-022) (depende de T029)
-- [ ] T031 [P] [US3] Criar o componente cliente de navegação e grade da semana em `components/habitos/week-grid.tsx` (`checkbox` por hábito/dia, atualização otimista via `useAction`, dias futuros desabilitados) (depende de T030)
-- [ ] T032 [US3] Criar a página da semana em `app/(app)/semana/page.tsx` (Server Component que carrega hábitos ativos + `getWeekCompletions` e passa ao `week-grid`) (depende de T031)
+- [X] T029 [P] [US3] Implementar `data/completions.ts`: `getWeekCompletions` (intervalo de 7 dias) e `toggleCompletion` (normaliza `date` para meia-noite UTC, checa propriedade, rejeita data futura, upsert/delete idempotente) (FR-014…FR-017, FR-022)
+- [X] T030 [US3] Criar `actions/toggle-completion.ts` com `protectedActionClient`, Zod (`habitId`, `date` ISO), rejeição de data futura, checagem de propriedade e `revalidatePath` (FR-014, FR-015, FR-016, FR-022) (depende de T029)
+- [X] T031 [P] [US3] Criar o componente cliente de navegação e grade da semana em `components/habitos/week-grid.tsx` (`checkbox` por hábito/dia, atualização otimista via `useAction`, dias futuros desabilitados) (depende de T030)
+- [X] T032 [US3] Criar a página da semana em `app/(app)/semana/page.tsx` (Server Component que carrega hábitos ativos + `getWeekCompletions` e passa ao `week-grid`) (depende de T031)
 
 **Checkpoint**: US1, US2 e US3 funcionam de forma independente.
 
