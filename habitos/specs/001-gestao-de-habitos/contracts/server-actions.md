@@ -15,41 +15,52 @@ cliente).
 
 ---
 
-## `create-habit` — Criar hábito (US2, FR-009, FR-010)
+## `create-habit` — Criar hábito (US2, FR-009, FR-010, FR-021)
 
 - **Arquivo**: `actions/create-habit.ts`
-- **Entrada (Zod)**: `{ name: string }` — `name` obrigatório, `trim`, 1–100 chars.
+- **Entrada (Zod)**: `{ name: string }` — `name` obrigatório, `trim`, 1–50 chars.
 - **Autorização**: exige sessão. O hábito é criado com `userId = ctx.user.id`.
-- **Efeito**: cria um `Habit`.
+- **Efeito**: valida unicidade do nome entre os hábitos ativos do usuário
+  (via `isHabitNameTaken`) e cria um `Habit`.
 - **Saída**: `{ habit: { id, name } }`.
-- **Erros**: `validationErrors.name` se vazio/ inválido.
+- **Erros**: `validationErrors.name` se vazio/inválido/exceder 50 chars, ou se
+  já existir hábito ativo com o mesmo nome (FR-021).
 
-## `update-habit` — Editar hábito (US2, FR-012)
+## `update-habit` — Editar hábito (US2, FR-012, FR-021)
 
 - **Arquivo**: `actions/update-habit.ts`
-- **Entrada (Zod)**: `{ id: string, name: string }` (mesmas regras de `name`).
+- **Entrada (Zod)**: `{ id: string, name: string }` (mesmas regras de `name`,
+  1–50 chars).
 - **Autorização**: exige sessão **e** que o hábito `id` pertença a `ctx.user.id`
   (FR-008). Caso contrário, `serverError` (não encontrado / não autorizado).
-- **Efeito**: atualiza `Habit.name`.
+- **Efeito**: valida unicidade do nome entre os hábitos ativos do usuário
+  (excluindo o próprio `id`) e atualiza `Habit.name`.
 - **Saída**: `{ habit: { id, name } }`.
+- **Erros**: `validationErrors.name` se inválido ou se colidir com outro
+  hábito ativo (FR-021).
 
-## `delete-habit` — Remover hábito (US2, FR-013)
+## `delete-habit` — Remover (arquivar) hábito (US2, FR-013, FR-023)
 
 - **Arquivo**: `actions/delete-habit.ts`
 - **Entrada (Zod)**: `{ id: string }`.
 - **Autorização**: exige sessão e propriedade do hábito (FR-008).
-- **Efeito**: remove o `Habit` e, em cascade, suas conclusões.
+- **Efeito**: **arquiva** o `Habit` (define `archivedAt = now()`); **não**
+  remove o registro nem suas conclusões, que permanecem contabilizadas nas
+  métricas históricas do dashboard (FR-013, FR-023).
 - **Saída**: `{ success: true }`.
 
-## `toggle-completion` — Marcar/desmarcar conclusão (US3, FR-014, FR-015, FR-016)
+## `toggle-completion` — Marcar/desmarcar conclusão (US3, FR-014, FR-015, FR-016, FR-022)
 
 - **Arquivo**: `actions/toggle-completion.ts`
 - **Entrada (Zod)**: `{ habitId: string, date: string /* ISO date */ }`.
 - **Autorização**: exige sessão e que o `habitId` pertença a `ctx.user.id`.
-- **Efeito**: normaliza `date` para meia-noite UTC; se já existe conclusão para
-  `(habitId, date)`, remove-a (desmarcar); caso contrário, cria-a (marcar).
-  Operação idempotente e segura sob concorrência graças ao índice único.
+- **Efeito**: normaliza `date` para meia-noite UTC; rejeita a operação se
+  `date` for posterior ao dia atual (FR-022, `validationErrors.date`); se já
+  existe conclusão para `(habitId, date)`, remove-a (desmarcar); caso
+  contrário, cria-a (marcar). Operação idempotente e segura sob concorrência
+  graças ao índice único.
 - **Saída**: `{ date, completed: boolean }` (estado final).
+- **Erros**: `validationErrors.date` se a data for futura (FR-022).
 
 ---
 
