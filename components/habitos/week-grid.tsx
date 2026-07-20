@@ -90,6 +90,7 @@ export function WeekGrid({
         <Button
           variant="outline"
           size="sm"
+          nativeButton={false}
           render={<Link href={`/semana?week=${toDateKey(previousWeekStart)}`} />}
         >
           <ChevronLeftIcon />
@@ -98,6 +99,7 @@ export function WeekGrid({
         <Button
           variant="outline"
           size="sm"
+          nativeButton={false}
           render={<Link href={`/semana?week=${toDateKey(nextWeekStart)}`} />}
         >
           Próxima semana

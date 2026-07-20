@@ -174,9 +174,9 @@ explícito de "sem dados".
 
 ### Implementation for User Story 4
 
-- [ ] T033 [P] [US4] Implementar `data/dashboard.ts`: `getCompletionsPerDay` (`groupBy` por `date`, janela dos últimos 30 dias, incluindo conclusões de hábitos arquivados; retorna `[]` quando vazio) (FR-019, FR-020, FR-023, SC-004)
-- [ ] T034 [P] [US4] Criar o gráfico de conclusões por dia em `components/habitos/completions-chart.tsx` (componente `chart` shadcn/Recharts, cores dos tokens de tema, estado vazio "sem dados") (depende de T033)
-- [ ] T035 [US4] Criar a página do dashboard em `app/(app)/dashboard/page.tsx` (Server Component que chama `getCompletionsPerDay` e renderiza o gráfico ou o estado vazio) (depende de T034)
+- [X] T033 [P] [US4] Implementar `data/dashboard.ts`: `getCompletionsPerDay` (`groupBy` por `date`, janela dos últimos 30 dias, incluindo conclusões de hábitos arquivados; retorna `[]` quando vazio) (FR-019, FR-020, FR-023, SC-004)
+- [X] T034 [P] [US4] Criar o gráfico de conclusões por dia em `components/habitos/completions-chart.tsx` (componente `chart` shadcn/Recharts, cores dos tokens de tema, estado vazio "sem dados") (depende de T033)
+- [X] T035 [US4] Criar a página do dashboard em `app/(app)/dashboard/page.tsx` (Server Component que chama `getCompletionsPerDay` e renderiza o gráfico ou o estado vazio) (depende de T034)
 
 **Checkpoint**: Todas as histórias de usuário funcionam de forma independente.
 
@@ -186,10 +186,10 @@ explícito de "sem dados".
 
 **Purpose**: Navegação, estados de carregamento e verificação final.
 
-- [ ] T036 [P] Criar a navegação autenticada entre `/habitos`, `/semana` e `/dashboard` com o botão de logout em `components/habitos/app-nav.tsx` e incluí-la no `app/(app)/layout.tsx`
-- [ ] T037 [P] Adicionar estados de carregamento com `skeleton` nas páginas de `(app)` (`loading.tsx` por rota)
-- [ ] T038 Executar `pnpm exec tsc --noEmit` e corrigir todos os erros de tipo
-- [ ] T039 Executar `pnpm lint` e corrigir todos os erros de ESLint (Princípio V)
+- [X] T036 [P] Criar a navegação autenticada entre `/habitos`, `/semana` e `/dashboard` com o botão de logout em `components/habitos/app-nav.tsx` e incluí-la no `app/(app)/layout.tsx`
+- [X] T037 [P] Adicionar estados de carregamento com `skeleton` nas páginas de `(app)` (`loading.tsx` por rota)
+- [X] T038 Executar `pnpm exec tsc --noEmit` e corrigir todos os erros de tipo
+- [X] T039 Executar `pnpm lint` e corrigir todos os erros de ESLint (Princípio V)
 - [ ] T040 Executar os cenários de validação manual do `quickstart.md` (US1–US4)
 
 ---
