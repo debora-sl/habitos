@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Loader2Icon } from "lucide-react";
 import { signIn, signUp } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -97,6 +98,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         </Field>
       </FieldGroup>
       <Button type="submit" disabled={isSubmitting}>
+        {isSubmitting && <Loader2Icon className="animate-spin" />}
         {SUBMIT_LABEL[mode]}
       </Button>
     </form>
