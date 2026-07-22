@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
@@ -63,14 +64,16 @@ export function AccountMenu({ user }: AccountMenuProps) {
         <span className="sr-only">Abrir menu da conta</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="flex flex-col gap-0.5 px-1.5 py-1">
-          <span className="text-sm font-medium text-foreground">
-            {user.name}
-          </span>
-          <span className="text-xs font-normal text-muted-foreground">
-            {user.email}
-          </span>
-        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="flex flex-col gap-0.5 px-1.5 py-1">
+            <span className="text-sm font-medium text-foreground">
+              {user.name}
+            </span>
+            <span className="text-xs font-normal text-muted-foreground">
+              {user.email}
+            </span>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
           {THEME_OPTIONS.map(({ value, label, icon: Icon }) => (
