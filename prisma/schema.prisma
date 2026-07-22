@@ -15,6 +15,8 @@ datasource db {
 model Habit {
   id         String    @id @default(cuid())
   name       String
+  color      String    @default("chart-1")
+  icon       String    @default("Sprout")
   userId     String
   archivedAt DateTime?
   createdAt  DateTime  @default(now())

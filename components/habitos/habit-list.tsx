@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
-import { MoreVerticalIcon, PlusIcon } from "lucide-react";
+import { ListChecksIcon, MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -21,12 +21,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { HabitForm } from "@/components/habitos/habit-form";
 import { deleteHabitAction } from "@/actions/delete-habit";
+import { getHabitColorVar, getHabitIcon } from "@/lib/habit-options";
 
 interface Habit {
   id: string;
   name: string;
+  color: string;
+  icon: string;
 }
 
 interface HabitListProps {
@@ -66,37 +77,64 @@ export function HabitList({ habits }: HabitListProps) {
       </div>
 
       {habits.length === 0 ? (
-        <Card>
-          <CardContent className="py-8 text-center text-sm text-muted-foreground">
-            Nenhum hábito cadastrado ainda.
-          </CardContent>
-        </Card>
+        <Empty className="border border-dashed">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <ListChecksIcon />
+            </EmptyMedia>
+            <EmptyTitle>Nenhum hábito cadastrado</EmptyTitle>
+            <EmptyDescription>
+              Crie seu primeiro hábito para começar a acompanhar seu progresso.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button size="sm" onClick={() => setIsCreateOpen(true)}>
+              <PlusIcon />
+              Novo hábito
+            </Button>
+          </EmptyContent>
+        </Empty>
       ) : (
         <div className="flex flex-col gap-2">
-          {habits.map((habit) => (
-            <Card key={habit.id}>
-              <CardContent className="flex items-center justify-between">
-                <span className="font-medium">{habit.name}</span>
-                <DropdownMenu>
-                  <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" />}>
-                    <MoreVerticalIcon />
-                    <span className="sr-only">Ações do hábito</span>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem onClick={() => setEditingHabit(habit)}>
-                      Editar
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      variant="destructive"
-                      onClick={() => setDeletingHabit(habit)}
+          {habits.map((habit) => {
+            const Icon = getHabitIcon(habit.icon);
+
+            return (
+              <Card
+                key={habit.id}
+                className="transition-colors hover:bg-muted/50"
+              >
+                <CardContent className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="flex size-9 shrink-0 items-center justify-center rounded-lg text-primary-foreground"
+                      style={{ backgroundColor: getHabitColorVar(habit.color) }}
                     >
-                      Remover
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </CardContent>
-            </Card>
-          ))}
+                      <Icon className="size-4.5" />
+                    </span>
+                    <span className="font-medium">{habit.name}</span>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" />}>
+                      <MoreVerticalIcon />
+                      <span className="sr-only">Ações do hábito</span>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem onClick={() => setEditingHabit(habit)}>
+                        Editar
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onClick={() => setDeletingHabit(habit)}
+                      >
+                        Remover
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
 

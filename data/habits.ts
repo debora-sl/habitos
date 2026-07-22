@@ -30,16 +30,27 @@ export async function isHabitNameTaken(
   return existingHabit !== null;
 }
 
-export function createHabit(userId: string, name: string) {
+export function createHabit(
+  userId: string,
+  name: string,
+  color: string,
+  icon: string
+) {
   return prisma.habit.create({
-    data: { userId, name },
+    data: { userId, name, color, icon },
   });
 }
 
-export async function updateHabit(id: string, userId: string, name: string) {
+export async function updateHabit(
+  id: string,
+  userId: string,
+  name: string,
+  color: string,
+  icon: string
+) {
   const { count } = await prisma.habit.updateMany({
     where: { id, userId },
-    data: { name },
+    data: { name, color, icon },
   });
 
   if (count === 0) {
